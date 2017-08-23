@@ -20,9 +20,14 @@ def reverse_complement(string):
     return ''.join(complement_list)
 
 
+def duplicates(lst, item):
+    return [i for i, x in enumerate(lst) if x == item]
+
+
 class Demuliplex:
 
-    def __init__(self, *args,  directory='path', sample_key='path', mismatch=1, file_label='rbbr', barcode_1=None, barcode_2=None):
+    def __init__(self, *args,  directory='path', sample_key='path', mismatch=1, file_label='rbbr', barcode_1=None,
+                 barcode_2=None):
         self.file_description = []
         for arg in args:
             self.file_description.append(arg.split('*'))
@@ -35,6 +40,12 @@ class Demuliplex:
         self.barcode_2 = barcode_2
         self.sample_key = sample_key
         self.file_list = []
+        self.output_dict = {}
+        self.barcode_count = None
+        self.reads = 0
+        self.reads_pass_filter = 0
+        self.unmatched_read = 0
+        self.sample_list =[]
 
     def process_barcodes(self):
         if self.barcode_1:
@@ -42,14 +53,16 @@ class Demuliplex:
             for count, line in enumerate(open(self.barcode_1)):
                 barcode = line.replace('\n', '')
                 reverse_barcode = reverse_complement(barcode)
-                barcode_dict[count+1] = [barcode, reverse_barcode]
+                barcode_dict[barcode] = count + 1
+                barcode_dict[reverse_barcode] = count + 1
             self.barcode_1 = barcode_dict
         if self.barcode_2:
             barcode_dict = {}
             for count, line in enumerate(open(self.barcode_2)):
                 barcode = line.replace('\n', '')
                 reverse_barcode = reverse_complement(barcode)
-                barcode_dict[count+1] = [barcode, reverse_barcode]
+                barcode_dict[barcode] = count + 1
+                barcode_dict[reverse_barcode] = count + 1
             self.barcode_2 = barcode_dict
 
     def get_sample_labels(self):
@@ -58,7 +71,11 @@ class Demuliplex:
         for line in open(self.sample_key):
             line_replace = line.replace('\n', '')
             line_split = line_replace.split('\t')
-            sample_dict[line_split[2]] = [int(line[0]), int(line[1])]
+            if self.barcode_2:
+                sample_dict['key' + str(int(line_split[0])) + ' key' + str(int(line_split[1]))] = line_split[2]
+                self.sample_list.append(line_split[2])
+            else:
+                sample_dict[line_split[1]] = int(line_split[0])
         self.sample_key = sample_dict
 
     def get_directory_lists(self):
@@ -73,13 +90,55 @@ class Demuliplex:
                     sorting_key[count].append(sort_id)
         for count, seq_file_list in enumerate(sample_names):
             self.file_list.append([x for x, y in sorted(zip(sample_names[count], sorting_key[count]))])
-        print(self.file_list)
 
+    def process_file_label(self):
+        label_list = []
+        for character in self.file_label:
+            if character.lower() == 'r':
+                label_list.append('read')
+            elif character.lower() == 'b':
+                label_list.append('barcode')
+        self.file_label = label_list
+        self.barcode_count = label_list.count('barcode')
 
-    #def output_fastq:
+    def output_objects(self, output_directory='path'):
+        for sample in self.sample_list:
+            object_list = []
+            for count in range(self.barcode_count):
+                object_list.append(open(output_directory + sample + '_' + str(count + 1) + '.gseq.txt', 'w'))
+            self.output_dict[sample] = object_list
+        object_list = []
+        for count in range(self.barcode_count):
+            object_list.append(open(output_directory + 'unmatched' + '_' + str(count + 1) + '.gseq.txt', 'w'))
+        self.output_dict['unmatched'] = object_list
 
-    #def iterate_through_fastq:
-
-
-test = Demuliplex('s_1_4_*_qseq.txt', 's_1_2_*_qseq.txt', directory='/home/colin/Dropbox/Pelligrini_Lab')
-test.get_directory_lists()
+    def iterate_through_gseq(self):
+        # transpose iterator list
+        self.file_list = list(map(list, zip(*self.file_list)))
+        for files in self.file_list:
+            iterator = MultipleSequencingFileIterator(*files, directory=self.directory)
+            barcode_indexs = duplicates(self.file_label, 'barcode')
+            read_indexs = duplicates(self.file_label, 'read')
+            for count, line in enumerate(iterator.iterator_zip()):
+                self.reads += 1
+                combined_filter = ''.join([qual[-1] for qual in line])
+                if '0' not in combined_filter:
+                    self.reads_pass_filter += 1
+                    try:
+                        key1 = self.barcode_1[line[barcode_indexs[0]][8]]
+                    except KeyError:
+                        key1 = None
+                    try:
+                        key2 = self.barcode_2[line[barcode_indexs[1]][8]]
+                    except KeyError:
+                        key2 = None
+                    if key1 and key2:
+                        sample_id= 'key' + str(key1) + ' key' + str(key2)
+                        try:
+                            sample = self.sample_key[sample_id]
+                        except KeyError:
+                            self.unmatched_read += 1
+                            sample = 'unmatched'
+                        out = self.output_dict[sample]
+                        out[0].write('\t'.join(line[read_indexs[0]]) + '\n')
+                        out[1].write('\t'.join(line[read_indexs[1]]) + '\n')

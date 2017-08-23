@@ -4,13 +4,13 @@
 class MultipleSequencingFileIterator:
     """Open multiple fastq or gseq files together and iterate over them as a group"""
 
-    def __init__(self, *args):
+    def __init__(self, *args, directory='path'):
         """Initiate iteration object, yield line in gseq files
          -----------------------------------------------------
          *args='path_to_gesq': returns an iterator object for paired sequencing files"""
         file_list = []
         for file in args:
-            file_list.append(file)
+            file_list.append(directory + file)
 
         def iteration_call(iter_file):
             with open(iter_file) as seq:
