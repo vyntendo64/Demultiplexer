@@ -36,9 +36,30 @@ class Demuliplex:
         self.sample_key = sample_key
         self.file_list = []
 
-    #def get_sample_labels:
+    def process_barcodes(self):
+        if self.barcode_1:
+            barcode_dict = {}
+            for count, line in enumerate(open(self.barcode_1)):
+                barcode = line.replace('\n', '')
+                reverse_barcode = reverse_complement(barcode)
+                barcode_dict[count+1] = [barcode, reverse_barcode]
+            self.barcode_1 = barcode_dict
+        if self.barcode_2:
+            barcode_dict = {}
+            for count, line in enumerate(open(self.barcode_2)):
+                barcode = line.replace('\n', '')
+                reverse_barcode = reverse_complement(barcode)
+                barcode_dict[count+1] = [barcode, reverse_barcode]
+            self.barcode_2 = barcode_dict
 
-   # def process_barcodes:
+    def get_sample_labels(self):
+        """Barcode1, barcode2, sample_name"""
+        sample_dict = {}
+        for line in open(self.sample_key):
+            line_replace = line.replace('\n', '')
+            line_split = line_replace.split('\t')
+            sample_dict[line_split[2]] = [int(line[0]), int(line[1])]
+        self.sample_key = sample_dict
 
     def get_directory_lists(self):
         file_list = listdir(self.directory)
@@ -60,5 +81,5 @@ class Demuliplex:
     #def iterate_through_fastq:
 
 
-test = Demuliplex('s_1_4_*_qseq.txt', 's_1_2_*_qseq.txt', directory='/Users/colinfarrell/Dropbox/Pelligrini_Lab')
+test = Demuliplex('s_1_4_*_qseq.txt', 's_1_2_*_qseq.txt', directory='/home/colin/Dropbox/Pelligrini_Lab')
 test.get_directory_lists()
