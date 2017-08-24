@@ -45,7 +45,7 @@ class Demuliplex:
         self.reads = 0
         self.reads_pass_filter = 0
         self.unmatched_read = 0
-        self.sample_list =[]
+        self.sample_list = []
 
     def process_barcodes(self):
         if self.barcode_1:
@@ -133,7 +133,7 @@ class Demuliplex:
                     except KeyError:
                         key2 = None
                     if key1 and key2:
-                        sample_id= 'key' + str(key1) + ' key' + str(key2)
+                        sample_id = 'key' + str(key1) + ' key' + str(key2)
                         try:
                             sample = self.sample_key[sample_id]
                         except KeyError:
@@ -142,3 +142,6 @@ class Demuliplex:
                         out = self.output_dict[sample]
                         out[0].write('\t'.join(line[read_indexs[0]]) + '\n')
                         out[1].write('\t'.join(line[read_indexs[1]]) + '\n')
+        for sample in self.output_dict.values():
+            for out_object in sample:
+                out_object.close()
