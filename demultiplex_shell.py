@@ -22,10 +22,10 @@ def launch_demultiplex(*args, directory='path', sample_key='path', mismatch=1, f
     print('Total time:' + str(round((end_time - start_time) / 60.0, 2)) + ' minutes')
 
 launch_demultiplex('s_1_1_*_qseq.txt', 's_1_2_*_qseq.txt', 's_1_3_*_qseq.txt', 's_1_4_*_qseq.txt',
-                      directory='/u/scratch2/c/colinpat/ATACseq/01_gseq/lane_1/',
-                      barcode_1='/u/scratch2/c/colinpat/ATACseq/N700_nextera_bacrodes.txt',
-                      barcode_2='/u/scratch2/c/colinpat/ATACseq/nextera_n50x_barcodes.txt',
-                      sample_key='/u/scratch2/c/colinpat/ATACseq/atac_sample_key.txt',
-                   output_directory='/u/scratch2/c/colinpat/ATACseq/demultiplexed/')
+                      directory='/Users/colinfarrell/Desktop/demultiplex_test_folder/',
+                      barcode_1='/Users/colinfarrell/Desktop/demultiplex_test_folder/N700_nextera_bacrodes.txt',
+                      barcode_2='/Users/colinfarrell/Desktop/demultiplex_test_folder/nextera_n50x_barcodes.txt',
+                      sample_key='/Users/colinfarrell/Desktop/demultiplex_test_folder/atac_sample_key.txt',
+                   output_directory='/Users/colinfarrell/Desktop/demultiplex_test_folder/output_test/')
 
 #/u/scratch2/c/colinpat/ATACseq/demultiplexed/a
