@@ -2,6 +2,8 @@
 
 from MultipleIterator import MultipleSequencingFileIterator
 from os import listdir
+import gzip
+import io
 
 
 def hamming_distance(s1, s2):
@@ -22,6 +24,16 @@ def reverse_complement(string):
 
 def duplicates(lst, item):
     return [i for i, x in enumerate(lst) if x == item]
+
+
+def qseq_fastq_conversion(qseq_list):
+    fastq_id = '@%s:%s:%s:%s:%s#%s/%s' % (qseq_list[0], qseq_list[2], qseq_list[3], qseq_list[4],
+                                          qseq_list[5], qseq_list[6], qseq_list[7])
+    seq = qseq_list[8].replace('.', 'N')
+    line_3 = '+'
+    quality = qseq_list[9]
+    fastq_out = fastq_id + '\n' + seq + '\n' + line_3 + '\n' + quality + '\n'
+    return fastq_out
 
 
 class Demuliplex:
@@ -105,11 +117,13 @@ class Demuliplex:
         for sample in self.sample_list:
             object_list = []
             for count in range(self.barcode_count):
-                object_list.append(open(output_directory + sample + '_' + str(count + 1) + '.gseq.txt', 'w'))
+                object_list.append(open(output_directory + sample + '_' +
+                                                              str(count + 1) + '.fastq', 'w'))
             self.output_dict[sample] = object_list
         object_list = []
         for count in range(self.barcode_count):
-            object_list.append(open(output_directory + 'unmatched' + '_' + str(count + 1) + '.gseq.txt', 'w'))
+            object_list.append(open(output_directory + 'unmatched' + '_' +
+                                                          str(count + 1) + '.fastq', 'w'))
         self.output_dict['unmatched'] = object_list
 
     def iterate_through_gseq(self):
@@ -140,8 +154,8 @@ class Demuliplex:
                             self.unmatched_read += 1
                             sample = 'unmatched'
                         out = self.output_dict[sample]
-                        out[0].write('\t'.join(line[read_indexs[0]]) + '\n')
-                        out[1].write('\t'.join(line[read_indexs[1]]) + '\n')
+                        out[0].write(qseq_fastq_conversion(line[read_indexs[0]]))
+                        out[1].write(qseq_fastq_conversion(line[read_indexs[1]]))
         for sample in self.output_dict.values():
             for out_object in sample:
                 out_object.close()
