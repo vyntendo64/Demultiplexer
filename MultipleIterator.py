@@ -10,13 +10,18 @@ class MultipleSequencingFileIterator:
     def __init__(self, *args, directory='path', gnu_zipped=False):
         """Initiate iteration object, yield line in gseq files
          -----------------------------------------------------
-         *args='path_to_gesq': returns an iterator object for paired sequencing files"""
+         *args='path_to_gesq': returns an iterator object for paired sequencing files
+         gnu_zipped=False: if gnu_zipped=True will process files with python gzip library, increases processing time
+         unix gunzip is faster"""
         file_list = []
+        # store files in list
         for file in args:
             file_list.append(directory + file)
 
+        # iterator initializer
         def iteration_call(iter_file):
             if gnu_zipped:
+                # wrap encoded line in buffer to stream text file
                 with io.TextIOWrapper(io.BufferedReader(gzip.open(iter_file, 'rb'))) as seq:
                     for line in seq:
                         # yield a line split by tabs and stripped of line identifier, '\n'
@@ -28,10 +33,11 @@ class MultipleSequencingFileIterator:
                         yield ((line.strip('\n')).split('\t'))
 
         self.iter_list = []
-        # append iterator object to list
+        # append iterator object to list, object is iterator for individual files
         for file in file_list:
             self.iter_list.append(iteration_call(file))
 
+    # zip files together to iterate over all of the files at once and yield one line at a time for looping
     def iterator_zip(self):
         for line in zip(*self.iter_list):
             yield line
