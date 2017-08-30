@@ -1,0 +1,5 @@
+include tests/test_qseq/*.txt tests/test_qseq/*.py
+include tests/test_sample_files/*.txt tests/test_sample_files/*.py
+include README*
+include LICENSE*
+include *.py

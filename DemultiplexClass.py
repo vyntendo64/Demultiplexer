@@ -1,4 +1,4 @@
-#! /usr/env python3
+#!/usr/bin/env python3
 
 from MultipleIterator import MultipleSequencingFileIterator
 from os import listdir
@@ -94,16 +94,19 @@ def barcode_mismatch(barcode='string', mismatch_list=('A', 'T', 'G', 'C', '.'), 
 
 
 class Demuliplex:
-    """Open a directory and process files :) """
+    """Opens Illumina qseq directory and processes qseq files, outputs samples fastq files"""
 
     def __init__(self, *args, directory='path', sample_key='path', mismatch=1, file_label='', barcode_1=None,
                  barcode_2=None, gnu_zipped=False):
+        # store file description
         self.file_description = []
         for arg in args:
             self.file_description.append(arg.split('*'))
+        # check if all input files have labels
         if len(file_label) != len(self.file_description):
             print('# of input files not equal to the number of input file labels')
             sys.exit()
+        # set input variables
         self.directory = directory
         self.mismatch = mismatch
         self.file_label = file_label

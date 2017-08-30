@@ -1,0 +1,6 @@
+01	sample_1
+02	sample_2
+03	sample_3
+04	sample_4
+05	sample_5
+06	sample_6

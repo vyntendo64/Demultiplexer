@@ -1,4 +1,4 @@
-#! /usr/env python3
+#!/usr/bin/env python3
 
 import DemultiplexClass
 import time
@@ -54,5 +54,5 @@ arguments = parser.parse_args()
 print('Started Job\n')
 
 launch_demultiplex(*arguments.I, directory=arguments.D, barcode_1=arguments.B1, barcode_2=arguments.B2,
-                   sample_key=arguments.S, output_directory=arguments.O, mismatch=arguments.M, file_label=arguments.L,
-                   gnu_zipped=arguments.Z)
+                   sample_key=arguments.S, output_directory=arguments.O, mismatch=arguments.M, gnu_zipped=arguments.Z,
+                   file_label=arguments.L)
