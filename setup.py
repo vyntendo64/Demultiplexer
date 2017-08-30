@@ -27,5 +27,6 @@ setup(name='Demultiplexer',
       license='MIT',
       include_package_data=True,
       package_data={'': ['tests/tes_qseq/*.txt', 'tests/tes_sample_files/*.txt', '*.txt']},
-      packages=find_packages()
+      packages=find_packages(),
+      test_suite='setup.my_test_suite'
       )
