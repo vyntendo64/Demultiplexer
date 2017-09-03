@@ -2,8 +2,6 @@
 
 from MultipleIterator import MultipleSequencingFileIterator
 from os import listdir
-import gzip
-import io
 
 
 def hamming_distance(s1, s2):
@@ -38,7 +36,7 @@ def qseq_fastq_conversion(qseq_list):
 
 class Demuliplex:
 
-    def __init__(self, *args,  directory='path', sample_key='path', mismatch=1, file_label='rbbr', barcode_1=None,
+    def __init__(self, *args, directory='path', sample_key='path', mismatch=1, file_label='rbbr', barcode_1=None,
                  barcode_2=None):
         self.file_description = []
         for arg in args:
@@ -118,12 +116,12 @@ class Demuliplex:
             object_list = []
             for count in range(self.barcode_count):
                 object_list.append(open(output_directory + sample + '_' +
-                                                              str(count + 1) + '.fastq', 'w'))
+                                        str(count + 1) + '.fastq', 'w'))
             self.output_dict[sample] = object_list
         object_list = []
         for count in range(self.barcode_count):
             object_list.append(open(output_directory + 'unmatched' + '_' +
-                                                          str(count + 1) + '.fastq', 'w'))
+                                    str(count + 1) + '.fastq', 'w'))
         self.output_dict['unmatched'] = object_list
 
     def iterate_through_gseq(self):

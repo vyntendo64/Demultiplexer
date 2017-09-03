@@ -28,4 +28,4 @@ launch_demultiplex('s_1_1_*_qseq.txt', 's_1_2_*_qseq.txt', 's_1_3_*_qseq.txt', '
                       sample_key='/Users/colinfarrell/Desktop/demultiplex_test_folder/atac_sample_key.txt',
                    output_directory='/Users/colinfarrell/Desktop/demultiplex_test_folder/output_test/')
 
-#/u/scratch2/c/colinpat/ATACseq/demultiplexed
+# /u/scratch2/c/colinpat/ATACseq/demultiplexed

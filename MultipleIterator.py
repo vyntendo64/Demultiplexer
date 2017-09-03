@@ -25,12 +25,12 @@ class MultipleSequencingFileIterator:
                 with io.TextIOWrapper(io.BufferedReader(gzip.open(iter_file, 'rb'))) as seq:
                     for line in seq:
                         # yield a line split by tabs and stripped of line identifier, '\n'
-                        yield ((line.strip('\n')).split('\t'))
+                        yield ((line.replace('\n', '')).split('\t'))
             else:
                 with open(iter_file) as seq:
                     for line in seq:
                         # yield a line split by tabs and stripped of line identifier, '\n'
-                        yield ((line.strip('\n')).split('\t'))
+                        yield ((line.replace('\n', '')).split('\t'))
 
         self.iter_list = []
         # append iterator object to list, object is iterator for individual files
