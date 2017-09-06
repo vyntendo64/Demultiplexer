@@ -31,7 +31,6 @@ class MultipleSequencingFileIterator:
                     for line in seq:
                         # yield a line split by tabs and stripped of line identifier, '\n'
                         yield ((line.replace('\n', '')).split('\t'))
-
         self.iter_list = []
         # append iterator object to list, object is iterator for individual files
         for file in file_list:
