@@ -16,14 +16,14 @@ python3 DemultiplexRun -D directory -S sample_key -B1 barcode_1 -B2 barcode_2 -L
 - -M, number of barcode mismatches to consider, default = 2
 - -O, path to output directory
 - -Z, designate is inpute qseq files are gzipped, slows processing
-- -I, qseq file prefix and suffix separated by *, ie. -I s_1_.*.qseq.txt s_2_.*.qseq.txt
+- -I, qseq file prefix and suffix separated by \^, ie. -I s_1_.\^.qseq.txt s_2_.\^.qseq.txt
 
 ## Examples
 
 ### Single Index Demultiplex
 
-python3 DemultiplexRun -D ~/Demultiplexer/tests/test_qseq -S ~/Demultiplexer/tests/test_sample_files/single_index_test.txt -B1 ~/Demultiplexer/tests/test_sample_files/N700_nextera_bacrodes.txt -L 'rb' -M 1 -O ~/Demultiplexer/tests/test_output/ -I 1_test.*.qseq.txt 2_test.*.qseq.txt
+python3 DemultiplexRun -D ~/Demultiplexer/tests/test_qseq -S ~/Demultiplexer/tests/test_sample_files/single_index_test.txt -B1 ~/Demultiplexer/tests/test_sample_files/N700_nextera_bacrodes.txt -L 'rb' -M 1 -O ~/Demultiplexer/tests/test_output/ -I 1_test.\^.qseq.txt 2_test.\^.qseq.txt
 
 ### Dual Indes Demultiplex
 
-python3 DemultiplexRun -D ~/Demultiplexer/tests/test_qseq -S ~/Demultiplexer/tests/test_sample_files/single_index_test.txt -B1 ~/Demultiplexer/tests/test_sample_files/N700_nextera_bacrodes.txt -B2 ~/Demultiplexer/tests/test_sample_files/N500_nextera_bacrodes.txt -L 'rbbr' -M 1 -O ~/Demultiplexer/tests/test_output/ -I 1_test.*.qseq.txt 2_test.*.qseq.txt 3_test.*.qseq.txt 4_test.*.qseq.txt
+python3 DemultiplexRun -D ~/Demultiplexer/tests/test_qseq -S ~/Demultiplexer/tests/test_sample_files/single_index_test.txt -B1 ~/Demultiplexer/tests/test_sample_files/N700_nextera_bacrodes.txt -B2 ~/Demultiplexer/tests/test_sample_files/N500_nextera_bacrodes.txt -L 'rbbr' -M 1 -O ~/Demultiplexer/tests/test_output/ -I 1_test.\^.qseq.txt 2_test.\^.qseq.txt 3_test.\^.qseq.txt 4_test.\^.qseq.txt
