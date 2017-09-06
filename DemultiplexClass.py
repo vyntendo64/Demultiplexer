@@ -101,7 +101,7 @@ class Demuliplex:
         # store file description
         self.file_description = []
         for arg in args:
-            self.file_description.append(arg.split('*'))
+            self.file_description.append(arg.split('^'))
         # check if all input files have labels
         if len(file_label) != len(self.file_description):
             print('# of input files not equal to the number of input file labels')
@@ -216,9 +216,9 @@ class Demuliplex:
         returns; sorted list of relevant files names in directory"""
         file_list = listdir(self.directory)
         # initialize list to hold sample names (ie. coupled file IDs)
-        sample_names = [[] for x in range(len(self.file_description))]
+        sample_names = [[] for _ in range(len(self.file_description))]
         # key to sort files bases on proper ID
-        sorting_key = [[] for y in range(len(self.file_description))]
+        sorting_key = [[] for _ in range(len(self.file_description))]
         for count, file_title in enumerate(self.file_description):
             for file_name in file_list:
                 # order files based on read type, ie all read 1 go together etc.

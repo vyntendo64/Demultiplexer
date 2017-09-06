@@ -2,34 +2,37 @@
 
 import unittest
 import DemultiplexClass
+import subprocess
 
-test_single_index_demultiplex = DemultiplexClass.Demuliplex('1_test.*.qseq.txt', '2_test.*.qseq.txt',
-                                                            directory='test_qseq/',
-                                                            sample_key='test_sample_files/single_index_test.txt',
-                                                            barcode_1='test_sample_files/N700_nextera_barcodes.txt',
+
+test_single_index_demultiplex = DemultiplexClass.Demuliplex('1_test.^.qseq.txt', '2_test.^.qseq.txt',
+                                                            directory='tests/test_qseq/',
+                                                            sample_key='tests/test_sample_files/single_index_test.txt',
+                                                            barcode_1='tests/test_sample_files/'
+                                                                      'N700_nextera_barcodes.txt',
                                                             file_label='rb',
                                                             )
 test_single_index_demultiplex.get_directory_lists()
 test_single_index_demultiplex.process_barcodes()
 test_single_index_demultiplex.process_file_label()
 test_single_index_demultiplex.get_sample_labels()
-test_single_index_demultiplex.output_objects(output_directory='test_output/')
+test_single_index_demultiplex.output_objects(output_directory='tests/test_output/')
 test_single_index_demultiplex.iterate_through_qseq()
 
 
-test_dual_index_demultiplex = DemultiplexClass.Demuliplex('1_test.*.qseq.txt', '2_test.*.qseq.txt',
-                                                          '3_test.*.qseq.txt', '4_test.*.qseq.txt',
-                                                          directory='test_qseq/',
-                                                          sample_key='test_sample_files/dual_index_test.txt',
-                                                          barcode_1='test_sample_files/N700_nextera_barcodes.txt',
-                                                          barcode_2='test_sample_files/N500_nextera_barcodes.txt',
+test_dual_index_demultiplex = DemultiplexClass.Demuliplex('1_test.^.qseq.txt', '2_test.^.qseq.txt',
+                                                          '3_test.^.qseq.txt', '4_test.^.qseq.txt',
+                                                          directory='tests/test_qseq/',
+                                                          sample_key='tests/test_sample_files/dual_index_test.txt',
+                                                          barcode_1='tests/test_sample_files/N700_nextera_barcodes.txt',
+                                                          barcode_2='tests/test_sample_files/N500_nextera_barcodes.txt',
                                                           file_label='rbbr'
                                                           )
 test_dual_index_demultiplex.get_directory_lists()
 test_dual_index_demultiplex.process_barcodes()
 test_dual_index_demultiplex.process_file_label()
 test_dual_index_demultiplex.get_sample_labels()
-test_dual_index_demultiplex.output_objects(output_directory='test_output/')
+test_dual_index_demultiplex.output_objects(output_directory='tests/test_output/')
 test_dual_index_demultiplex.iterate_through_qseq()
 
 
@@ -71,6 +74,39 @@ class TestDemultiplex(unittest.TestCase):
         x = test_dual_index_demultiplex.file_list[1][2].replace('3_test', '')
         y = test_dual_index_demultiplex.file_list[1][3].replace('4_test', '')
         self.assertEqual(x, y)
+
+    def test_command_line_single_index(self):
+        parser_open = subprocess.run(['python3', 'DemultiplexRun.py', '-D', 'tests/test_qseq/', '-S',
+                            'tests/test_sample_files/single_index_test.txt', '-B1',
+                            'tests/test_sample_files/N700_nextera_barcodes.txt', '-L', 'rb', '-O', 'tests/test_output/',
+                            '-I', '1_test.^.qseq.txt', '2_test.^.qseq.txt'],
+                            stdout=subprocess.PIPE)
+        output = parser_open.stdout
+        output_categories = (output.decode()).split('\n')
+        filter = int(output_categories[2].split(':')[1])
+        indexed = int(output_categories[3].split(':')[1])
+        unmatched = int(output_categories[4].split(':')[1])
+        self.assertEqual(filter, 19614)
+        self.assertEqual(indexed, 16840)
+        self.assertEqual(unmatched, 2774)
+
+    def test_command_line_dual_index(self):
+        parser_open = subprocess.run(['python3', 'DemultiplexRun.py', '-D', 'tests/test_qseq/', '-S',
+                                      'tests/test_sample_files/dual_index_test.txt', '-B1',
+                                      'tests/test_sample_files/N700_nextera_barcodes.txt', '-B2',
+                                      'tests/test_sample_files/N500_nextera_barcodes.txt', '-L', 'rbbr', '-O',
+                                      'tests/test_output/', '-I', '1_test.^.qseq.txt', '2_test.^.qseq.txt',
+                                      '3_test.^.qseq.txt', '4_test.^.qseq.txt'],
+                                     stdout=subprocess.PIPE)
+        output = parser_open.stdout
+        output_categories = (output.decode()).split('\n')
+        filter = int(output_categories[2].split(':')[1])
+        indexed = int(output_categories[3].split(':')[1])
+        unmatched = int(output_categories[4].split(':')[1])
+        self.assertEqual(filter, 19264)
+        self.assertEqual(indexed, 9844)
+        self.assertEqual(unmatched, 9420)
+
 
 if __name__ == '__main__':
     unittest.main()

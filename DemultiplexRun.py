@@ -43,15 +43,15 @@ parser.add_argument('-B2', type=str, default=None, help='/path/barcode_2_file, l
 parser.add_argument('-L', type=str, help='string of r and b character to designate input files as '
                                          'barcode or read files, should be the same order as input'
                                          'file')
-parser.add_argument('-M', type=int, help='number of barcode mismatches to consider, default = 2')
+parser.add_argument('-M', type=int, default=2, help='number of barcode mismatches to consider, default = 2')
 parser.add_argument('-O', type=str, help='path to output directory')
 parser.add_argument('-Z', action="store_true", default=False, help='if qseq files gzipped, slows processing')
 parser.add_argument('-I', type=str, nargs='*', help='qseq file prefix and suffix separated'
-                                                    'by *, ie. -I s_1_*.qseq.txt '
-                                                    's_2_*.qseq.txt ')
+                                                    'by ^, ie. -I s_1_^.qseq.txt '
+                                                    's_2_^.qseq.txt ')
 arguments = parser.parse_args()
 
-print('Started Job\n')
+print('Started Job')
 
 launch_demultiplex(*arguments.I, directory=arguments.D, barcode_1=arguments.B1, barcode_2=arguments.B2,
                    sample_key=arguments.S, output_directory=arguments.O, mismatch=arguments.M, gnu_zipped=arguments.Z,
