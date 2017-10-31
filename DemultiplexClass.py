@@ -52,7 +52,7 @@ def qseq_fastq_conversion(qseq_list):
     return fastq_out
 
 
-def barcode_mismatch(barcode='string', mismatch_list=('A', 'T', 'G', 'C', '.'), number_mismatches=1):
+def barcode_mismatch(barcode='string', mismatch_list=('A', 'T', 'G', 'C', '.'), number_mismatches=2):
     """Takes a barcode input and outputs a list containing the original barcode and mistmatched barcodes. Will return
     every possible mismatch based on the mismatch list input.  Slow implementation of designating mismatches, but
     the script is only used to initialize a hash table. This method is much faster then calculating the hamming distance
@@ -90,7 +90,7 @@ def barcode_mismatch(barcode='string', mismatch_list=('A', 'T', 'G', 'C', '.'), 
                             barcode_list[character] = possible_mismatch
                             if ''.join(barcode_list) not in all_barcodes:
                                 all_barcodes.append(''.join(barcode_list))
-    return all_barcodes
+    return list(set(all_barcodes))
 
 
 class Demuliplex:
@@ -129,6 +129,7 @@ class Demuliplex:
         -----------------------------------------------------
         opens self.barcode*, a path to text file with a new barcode on each line
         returns self.barcode*, a dictionary hashing barcodes to an Illumina ID"""
+        # todo broke tests by changing hash collision detection
         if self.barcode_1:
             # initialize dict
             barcode_dict = {}
@@ -142,16 +143,22 @@ class Demuliplex:
                 barcode_list = barcode_mismatch(barcode, number_mismatches=self.mismatch)
                 # iterate over list and initialize a dictionary key value pair for every barcode
                 for possible_barcode in barcode_list:
-                    barcode_dict[possible_barcode] = count + 1
+                    if possible_barcode not in list(barcode_dict.keys()):
+                        barcode_dict[possible_barcode] = count + 1
+                    else:
+                        if count + 1 != barcode_dict[possible_barcode]:
+                            print('Hash Collision, reduce the number of allowed mismatches')
+                            sys.exit()
                 # repeat for barcode reverse complement
                 reverse_barcode_list = barcode_mismatch(reverse_barcode, number_mismatches=self.mismatch)
                 for possible_reverse_barcode in reverse_barcode_list:
-                    barcode_dict[possible_reverse_barcode] = count + 1
+                    if possible_reverse_barcode not in list(barcode_dict.keys()):
+                        barcode_dict[possible_reverse_barcode] = count + 1
+                    else:
+                        if count + 1 != barcode_dict[possible_reverse_barcode]:
+                            print('Hash Collision, reduce the number of allowed mismatches')
+                            sys.exit()
             self.barcode_1 = barcode_dict
-            # check if there are non-unique barcodes
-            if len(self.barcode_1.keys()) != len(set(self.barcode_1.keys())):
-                print('Non-unique barcode identifiers, reduce the number of allowed mismatches')
-                sys.exit()
         # if barcode_2 file is given, repeat process
         if self.barcode_2:
             barcode_dict = {}
@@ -162,14 +169,21 @@ class Demuliplex:
                 reverse_barcode = reverse_complement(barcode)
                 barcode_list = barcode_mismatch(barcode, number_mismatches=self.mismatch)
                 for possible_barcode in barcode_list:
-                    barcode_dict[possible_barcode] = count + 1
+                    if possible_barcode not in list(barcode_dict.keys()):
+                        barcode_dict[possible_barcode] = count + 1
+                    else:
+                        if count + 1 != barcode_dict[possible_barcode]:
+                            print('Hash Collision, reduce the number of allowed mismatches')
+                            sys.exit()
                 reverse_barcode_list = barcode_mismatch(reverse_barcode, number_mismatches=self.mismatch)
                 for possible_reverse_barcode in reverse_barcode_list:
-                    barcode_dict[possible_reverse_barcode] = count + 1
+                    if possible_reverse_barcode not in list(barcode_dict.keys()):
+                        barcode_dict[possible_reverse_barcode] = count + 1
+                    else:
+                        if count + 1 != barcode_dict[possible_reverse_barcode]:
+                            print('Hash Collision, reduce the number of allowed mismatches')
+                            sys.exit()
             self.barcode_2 = barcode_dict
-            if len(self.barcode_2.keys()) != len(set(self.barcode_2.keys())):
-                print('Non-unique barcode identifiers, reduce the number of allowed mismatches')
-                sys.exit()
 
     def get_sample_labels(self):
         """Takes sample label file and processes barcode sample IDs.  Note this function assumes 'barcode1 \t barcode 2
