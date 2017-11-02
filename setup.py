@@ -7,7 +7,7 @@ import unittest
 # Utility function to read the README file.
 # Used for the long_description.  It's nice, because now 1) we have a top level
 # README file and 2) it's easier to type in the README file than to put a raw
-# string in below ...
+# python3 setup.py sdist
 
 
 def read(fname):
@@ -20,7 +20,7 @@ def my_test_suite():
     return test_suite
 
 setup(name='Demultiplexer',
-      version='0.1.1',
+      version='0.1.2',
       description='Demultiplex Illumina lane .qseq to sample .fastq',
       author='Colin Farrell',
       author_email='colinpfarrell@gmail.com',
