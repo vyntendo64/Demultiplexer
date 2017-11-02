@@ -38,8 +38,8 @@ parser.add_argument('-S', type=str, help='/path/sample_file.txt file should be f
                                          'barcode tab sample_name\' for single index and '
                                          '\'barcode tab barcode tab sample_name\' '
                                          'for dual indexes ')
-parser.add_argument('-B1', type=str, help='/path/barcode_1_file, line separated list of barcodes')
-parser.add_argument('-B2', type=str, default=None, help='/path/barcode_2_file, line separated list of barcodes')
+parser.add_argument('-B1', type=str, help='/path/barcode_1_file, barcode \t index key')
+parser.add_argument('-B2', type=str, default=None, help='/path/barcode_2_file, barcode \t index key')
 parser.add_argument('-L', type=str, help='string of r and b character to designate input files as '
                                          'barcode or read files, should be the same order as input'
                                          'file')

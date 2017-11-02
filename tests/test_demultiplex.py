@@ -99,13 +99,14 @@ class TestDemultiplex(unittest.TestCase):
                                       '3_test.^.qseq.txt', '4_test.^.qseq.txt'],
                                      stdout=subprocess.PIPE)
         output = parser_open.stdout
+        print(output)
         output_categories = (output.decode()).split('\n')
         filter = int(output_categories[2].split(':')[1])
         indexed = int(output_categories[3].split(':')[1])
         unmatched = int(output_categories[4].split(':')[1])
         self.assertEqual(filter, 19264)
-        self.assertEqual(indexed, 9844)
-        self.assertEqual(unmatched, 9420)
+        self.assertEqual(indexed, 9420)
+        self.assertEqual(unmatched, 9844)
 
 
 if __name__ == '__main__':

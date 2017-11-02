@@ -129,15 +129,17 @@ class Demuliplex:
         -----------------------------------------------------
         opens self.barcode*, a path to text file with a new barcode on each line
         returns self.barcode*, a dictionary hashing barcodes to an Illumina ID"""
-        collision_sequences = []
         # todo broke tests by changing hash collision detection
         if self.barcode_1:
+            collision_sequences = []
             # initialize dict
             barcode_dict = {}
             # loop through barcode text file
             for count, line in enumerate(open(self.barcode_1)):
                 # replace new line indicator
-                barcode = line.replace('\n', '')
+                line_split = (line.replace('\n', '')).split('\t')
+                barcode = line_split[0]
+                barcode_number = int(line_split[1])
                 # look up reverse complement
                 reverse_barcode = reverse_complement(barcode)
                 # get list containing barcode and all mismatches
@@ -146,7 +148,7 @@ class Demuliplex:
                 for possible_barcode in barcode_list:
                     if possible_barcode not in collision_sequences:
                         if possible_barcode not in list(barcode_dict.keys()):
-                            barcode_dict[possible_barcode] = count + 1
+                            barcode_dict[possible_barcode] = barcode_number
                         else:
                             collision_sequences.append(possible_barcode)
                             del barcode_dict[possible_barcode]
@@ -155,24 +157,28 @@ class Demuliplex:
                 for possible_reverse_barcode in reverse_barcode_list:
                     if possible_reverse_barcode not in collision_sequences:
                         if possible_reverse_barcode not in list(barcode_dict.keys()):
-                            barcode_dict[possible_reverse_barcode] = count + 1
+                            barcode_dict[possible_reverse_barcode] = barcode_number
                         else:
                             collision_sequences.append(possible_reverse_barcode)
                             del barcode_dict[possible_reverse_barcode]
             self.barcode_1 = barcode_dict
         # if barcode_2 file is given, repeat process
         if self.barcode_2:
+            collision_sequences = []
             barcode_dict = {}
             for count, line in enumerate(open(self.barcode_2)):
                 # replace new line indicator
-                barcode = line.replace('\n', '')
+                # replace new line indicator
+                line_split = (line.replace('\n', '')).split('\t')
+                barcode = line_split[0]
+                barcode_number = int(line_split[1])
                 # look up reverse complement
                 reverse_barcode = reverse_complement(barcode)
                 barcode_list = barcode_mismatch(barcode, number_mismatches=self.mismatch)
                 for possible_barcode in barcode_list:
                     if possible_barcode not in collision_sequences:
                         if possible_barcode not in list(barcode_dict.keys()):
-                            barcode_dict[possible_barcode] = count + 1
+                            barcode_dict[possible_barcode] = barcode_number
                         else:
                             collision_sequences.append(possible_barcode)
                             del barcode_dict[possible_barcode]
@@ -181,12 +187,11 @@ class Demuliplex:
                 for possible_reverse_barcode in reverse_barcode_list:
                     if possible_reverse_barcode not in collision_sequences:
                         if possible_reverse_barcode not in list(barcode_dict.keys()):
-                            barcode_dict[possible_reverse_barcode] = count + 1
+                            barcode_dict[possible_reverse_barcode] = barcode_number
                         else:
                             collision_sequences.append(possible_reverse_barcode)
                             del barcode_dict[possible_reverse_barcode]
             self.barcode_2 = barcode_dict
-        print(len(collision_sequences))
 
     def get_sample_labels(self):
         """Takes sample label file and processes barcode sample IDs.  Note this function assumes 'barcode1 \t barcode 2
