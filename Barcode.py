@@ -44,9 +44,6 @@ class Barcode:
         # calculate first set of mismatches
         # loop over possible mismatches
 
-        # print('mismatch list')
-        # print(self.mismatch_list)
-
         all_barcodes = [self.barcode]
 
         for possible_mismatch in self.mismatch_list:

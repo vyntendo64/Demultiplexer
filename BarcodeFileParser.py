@@ -15,7 +15,7 @@ class BarcodeFileParser:
         self.barcodes = {}
 
     def get_barcodes(self):
-        print(self.path)
+        # print(self.path)
         if (self.path == None):
             return self.barcodes
 
@@ -43,25 +43,3 @@ class BarcodeFileParser:
                 else:
                     self.collision_sequences.append(possible_barcode)
                     del self.barcodes[possible_barcode]
-
-    
-
-    def reverse_complement(string):
-        """Simple reverse complement function used to initialize a barcode dictionary, (original sequence and reverse
-        complement both link to same hash in dictionary).
-        -----------------------------------------------------
-        string='string': string must be composed of BP ATGC
-        returns; reverse complement string"""
-        # reverse string
-        reverse_string = string[::-1]
-        # complementary bp lookup dictionary
-        all_bases = list(reverse_string)
-        complement_list = []
-        # iterate over string list
-        for i in all_bases:
-            complement_list.append(complement[i])
-        # return joined string
-        return ''.join(complement_list)
-
-
-    

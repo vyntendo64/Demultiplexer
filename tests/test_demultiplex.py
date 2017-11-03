@@ -13,6 +13,9 @@ test_single_index_demultiplex = Demultiplex.Demuliplex('1_test.^.qseq.txt',
     barcode_1 = 'tests/test_sample_files/N700_nextera_barcodes.txt',
     action = 'rb')
 
+# print('test_single_index_demultiplex')
+# print(vars(test_single_index_demultiplex))
+
 test_single_index_demultiplex.run()
 # test_single_index_demultiplex.process_barcodes()
 # test_single_index_demultiplex.set_action()

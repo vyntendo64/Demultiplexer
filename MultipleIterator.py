@@ -2,18 +2,20 @@
 
 import gzip
 import io
-
+from os import listdir
+from os.path import isfile, join
 
 class MultipleSequencingFileIterator:
     """Open multiple fastq or gseq files together and iterate over them as a group"""
 
-    def __init__(self, *args, directory='path', gnu_zipped=False):
+    def __init__(self, *args, directory = 'path', gnu_zipped = False):
         """Initiate iteration object, yield line in gseq files
          -----------------------------------------------------
          *args='path_to_gesq': returns an iterator object for paired sequencing files
          gnu_zipped=False: if gnu_zipped=True will process files with python gzip library, increases processing time
          unix gunzip is faster"""
         file_list = []
+        self.iter_list = []
         # store files in list
         for file in args:
             file_list.append(directory + file)
@@ -35,7 +37,7 @@ class MultipleSequencingFileIterator:
                 for line in seq:
                     # yield a line split by tabs and stripped of line identifier, '\n'
                     yield ((line.replace('\n', '')).split('\t'))
-        self.iter_list = []
+        
 
     # zip files together to iterate over all of the files at once and yield one line at a time for looping
     def iterator_zip(self):

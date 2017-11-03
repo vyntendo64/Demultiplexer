@@ -30,7 +30,7 @@ class Demuliplex:
 
         # check if all input files have labels
         if len(action) != len(self.file_description):
-            print('# of input files not equal to the number of input file labels')
+            #print('# of input files not equal to the number of input file labels')
             sys.exit()
 
         # set input variables
@@ -39,19 +39,17 @@ class Demuliplex:
         self.sample_key = sample_key
         self.mismatch = mismatch
         self.action = action
-
         self.barcode_1 = barcode_1
         self.barcode_2 = barcode_2
-
         self.gnu_zipped = gnu_zipped
 
-        directory_parser = DirectoryFileParser(directory, self.file_description)
+        self.setUp()
+        
+        directory_parser = DirectoryFileParser(directory = directory, 
+            file_description = self.file_description)
+
         self.files = directory_parser.get_files()
 
-        print('files')
-        print(self.files)
-
-        self.setUp()
 
     def setUp(self):
         self.files = []
@@ -62,12 +60,15 @@ class Demuliplex:
         self.unmatched_read = 0
         self.indexed_reads = 0
         self.sample_list = []
+        self.output_dict = {}
 
     def run(self):
+        # print('sself filess')
+        # print(self.files)
         self.process_barcodes()
         self.set_action()
 
-        key_file_parser = KeyFileParser(self.sample_key)
+        key_file_parser = KeyFileParser(path = self.sample_key)
 
         if self.barcode_2:
             key_file_parser.set_combination_labels()
@@ -77,7 +78,10 @@ class Demuliplex:
         self.sample_list = key_file_parser.get_sample_list();
         self.sample_key = key_file_parser.get_sample_key();
 
-        qseq_file_parser = QseqFileParser(self.files)
+        qseq_file_parser = QseqFileParser(files = self.files,
+            directory = self.directory,
+            gnu_zipped = self.gnu_zipped)
+        
         qseq_file_parser.run()
 
 
@@ -135,7 +139,7 @@ class Demuliplex:
                 try:
                     sample_dict['key' + str(int(line_split[0])) + 'key' + str(int(line_split[1]))] = line_split[2]
                 except ValueError:
-                    print('Sample Key not in proper format\nPlease format file Barcode1 tab Barcode2 tab SampleName')
+                    # print('Sample Key not in proper format\nPlease format file Barcode1 tab Barcode2 tab SampleName')
                     sys.exit()
                 self.sample_list.append(line_split[2])
             # else id is only one barcode
@@ -143,7 +147,7 @@ class Demuliplex:
                 try:
                     sample_dict['key' + str(int(line_split[0]))] = line_split[1]
                 except ValueError:
-                    print('Sample Key not in proper format\nPlease format file Barcode tab SampleName')
+                    # print('Sample Key not in proper format\nPlease format file Barcode tab SampleName')
                     sys.exit()
                 self.sample_list.append(line_split[1])
         self.sample_key = sample_dict
@@ -159,9 +163,9 @@ class Demuliplex:
         self.read_count: number of read files labeled in file label
         returns self.output_dict; hashes to output object based on sample name"""
         # initialize output objects for all samples
-        print(self.sample_list)
-        print('read count')
-        print(self.read_count)
+        # print(self.sample_list)
+        # print('read count')
+        # print(self.read_count)
         for sample in self.sample_list:
             object_list = []
             for count in range(self.read_count):

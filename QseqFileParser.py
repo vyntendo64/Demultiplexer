@@ -3,9 +3,11 @@
 from MultipleIterator import MultipleSequencingFileIterator
 
 class QseqFileParser:
-    def __init__(self, files):
+    def __init__(self, files = (), directory = 'path', gnu_zipped = False):
         self.files = files
         self.output_dict = {}
+        self.directory = directory,
+        self.gnu_zipped = gnu_zipped
 
     def run(self):
         """Iterate through groups of ID'd qseq files and output demultiplexed fastq files
@@ -21,9 +23,14 @@ class QseqFileParser:
         self.unmatched_reads = number of unmatched reads
         """
         # transpose iterator list
-        self.files = list(map(list, zip(*self.files)))
+        print('running')
+        print(self.files)
+        unizipped_files = list(map(list, zip(*self.files)))
+        print(unizipped_files)
         # loop through lists of files
-        for files in self.files:
+        for files in unizipped_files:
+            print('files')
+            print(files)
             # initialize iterator object for sorted group of files
             iterator = MultipleSequencingFileIterator(*files, directory=self.directory, gnu_zipped=self.gnu_zipped)
             # get position of barcode files
