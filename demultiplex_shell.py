@@ -6,6 +6,7 @@ import time
 
 def launch_demultiplex(*args, directory='path', sample_key='path', mismatch=1, file_label='rbbr', barcode_1=None,
                  barcode_2=None, output_directory=None):
+
     start_time = time.time()
     demultiplex = Demultiplex.Demuliplex(*args, directory=directory, barcode_1=barcode_1, barcode_2=barcode_2,
                                          sample_key=sample_key, file_label=file_label)
@@ -16,7 +17,8 @@ def launch_demultiplex(*args, directory='path', sample_key='path', mismatch=1, f
     demultiplex.output_objects(output_directory=output_directory)
     demultiplex.iterate_through_gseq()
     end_time = time.time()
-    print('Total reads:' + str(demultiplex.reads))
+    
+    print('Total readss:' + str(demultiplex.reads))
     print('Reads passing filter:' + str(demultiplex.reads_pass_filter))
     print('Unmatched reads:' + str(demultiplex.unmatched_read))
     print('Total time:' + str(round((end_time - start_time) / 60.0, 2)) + ' minutes')
