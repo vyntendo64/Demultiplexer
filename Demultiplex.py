@@ -55,9 +55,9 @@ class Demuliplex:
         self.files = []
         self.barcode_count = None
         self.read_count = None
-        self.reads = 0
-        self.reads_pass_filter = 0
-        self.unmatched_read = 0
+        
+        
+        
         self.indexed_reads = 0
         self.sample_list = []
         self.output_dict = {}
@@ -80,7 +80,9 @@ class Demuliplex:
 
         qseq_file_parser = QseqFileParser(files = self.files,
             directory = self.directory,
-            gnu_zipped = self.gnu_zipped)
+            gnu_zipped = self.gnu_zipped,
+            action = self.action,
+            barcode_list = [self.barcode_1, self.barcode_2])
         
         qseq_file_parser.run()
 
