@@ -5,36 +5,38 @@ import io
 
 class MultipleSequencingFileIterator:
     def __init__(self, 
-        files = [], 
-        directory = 'path', 
-        gnu_zipped = False):
-        """Initiate iteration object, yield line in gseq files
-         -----------------------------------------------------
-         *args='path_to_gesq': returns an iterator object for paired sequencing files
-         gnu_zipped=False: if gnu_zipped=True will process files with python gzip library, increases processing time
-         unix gunzip is faster"""
+        files = []):
+        self.gnu_zipped = False
+        self.files = files
+        self.ordered_paths = self.get_ordered_paths(files)
+        self.build = []
 
-        self.iter_list = []
+    def populate(self):
+        for ordered_path in self.ordered_paths:
+            for path in ordered_path:
+                self.build.append(self.get_row_from_file_path(path))
 
+    def get_ordered_paths(self, files):
+        ordered_paths = []
         for file in files:
-            print(file)
-            print('file')
-            self.iter_list.append(self.iteration_call(file["path"]))
+            ordered_paths.append(file['path'])
 
-    def iteration_call(iter_file):
-        if gnu_zipped:
-            # wrap encoded line in buffer to stream text file
-            with io.TextIOWrapper(io.BufferedReader(gzip.open(iter_file, 'rb'))) as seq:
-                for line in seq:
-                    # yield a line split by tabs and stripped of line identifier, '\n'
-                    yield ((line.replace('\n', '')).split('\t'))
+        return list(map(list, zip(*ordered_paths)))
+            
+
+    def get_row_from_file_path(self, path):
+        if self.gnu_zipped:
+            # wrap encoded row in buffer to stream text file
+            with io.TextIOWrapper(io.BufferedReader(gzip.open(path, 'rb'))) as file:
+                for row in file:
+                    # yield a row split by tabs and stripped of row identifier, '\n'
+                    yield ((row.replace('\n', '')).split('\t'))
         else:
-            with open(iter_file) as seq:
-                for line in seq:
-                    # yield a line split by tabs and stripped of line identifier, '\n'
-                    yield ((line.replace('\n', '')).split('\t'))
+            with open(path) as file:
+                for row in file:
+                    # yield a row split by tabs and stripped of row identifier, '\n'
+                    yield ((row.replace('\n', '')).split('\t'))
 
-    # zip files together to iterate over all of the files at once and yield one line at a time for looping
-    def iterator_zip(self):
-        for line in zip(*self.iter_list):
-            yield line
+    def get_next_row(self):
+        for row in zip(*self.build):
+            yield row

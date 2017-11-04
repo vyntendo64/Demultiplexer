@@ -31,10 +31,11 @@ class Demuliplex:
         primary_barcodes = self.primary_barcode_parser.get_barcodes()
         secondary_barcodes = self.secondary_barcode_parser.get_barcodes()
 
+        parse_type = 'single'
         if secondary_barcodes:
-            self.key_file_parser.set_labels('dual')
-        else:
-            self.key_file_parser.set_labels('single')
+            parse_type = 'dual'
+            
+        self.key_file_parser.set_labels(parse_type)
 
         sample_list = self.key_file_parser.get_sample_list()
         sample_key = self.key_file_parser.get_sample_key()
@@ -45,6 +46,6 @@ class Demuliplex:
             sample_key = sample_key,
             sample_list = sample_list,
             read_count = self.file_extractor.get_read_count(),
-            gnu_zipped = gnu_zipped)
+            parse_type = parse_type)
         
         qseq_file_parser.write()    
