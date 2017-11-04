@@ -4,14 +4,17 @@ import unittest
 import Demultiplex
 import subprocess
 
-
-test_single_index_demultiplex = Demultiplex.Demuliplex('1_test.^.qseq.txt', 
-    '2_test.^.qseq.txt',
-    directory = 'tests/test_qseq/',
-    output_directory = 'tests/test_output/',
-    sample_key = 'tests/test_sample_files/single_index_test.txt',
-    barcode_1 = 'tests/test_sample_files/N700_nextera_barcodes.txt',
-    action = 'rb')
+test_single_index_demultiplex = Demultiplex.Demuliplex(files = [
+    {
+        'path': 'tests/test_qseq/1_test.^.qseq.txt', 
+        'action': 'read'
+    }, 
+    {
+        'path': 'tests/test_qseq/2_test.^.qseq.txt', 
+        'action': 'barcode'
+    }],
+    sample_key_path = 'tests/test_sample_files/single_index_test.txt',
+    primary_barcodes_path = 'tests/test_sample_files/N700_nextera_barcodes.txt')
 
 # print('test_single_index_demultiplex')
 # print(vars(test_single_index_demultiplex))
@@ -26,22 +29,31 @@ test_single_index_demultiplex.run()
 # test_single_index_demultiplex.run()
 
 
-test_dual_index_demultiplex = Demultiplex.Demuliplex('1_test.^.qseq.txt', 
-    '2_test.^.qseq.txt',
-    '3_test.^.qseq.txt', 
-    '4_test.^.qseq.txt',
-    directory = 'tests/test_qseq/',
-    output_directory = 'tests/test_output/',
-    sample_key = 'tests/test_sample_files/dual_index_test.txt',
-    barcode_1 = 'tests/test_sample_files/N700_nextera_barcodes.txt',
-    barcode_2 = 'tests/test_sample_files/N500_nextera_barcodes.txt',
-    action = 'rbbr')
+test_dual_index_demultiplex = Demultiplex.Demuliplex(files = [
+    {
+        'path': '1_test.^.qseq.txt',
+        'action': 'read'
+    },
+    {
+        'path': '2_test.^.qseq.txt',
+        'action': 'barcode'
+    },
+    {
+        'path': '3_test.^.qseq.txt',
+        'action': 'barcode'
+    },
+    {
+        'path': '4_test.^.qseq.txt',
+        'action': 'read'
+    }],
+    sample_key_path = 'tests/test_sample_files/dual_index_test.txt',
+    primary_barcodes_path = 'tests/test_sample_files/N700_nextera_barcodes.txt',
+    secondary_barcodes_path = 'tests/test_sample_files/N500_nextera_barcodes.txt')
 
-test_dual_index_demultiplex.process_barcodes()
-test_dual_index_demultiplex.set_action()
-test_dual_index_demultiplex.get_sample_labels()
-test_dual_index_demultiplex.output_objects()
-test_dual_index_demultiplex.iterate_through_qseq()
+# test_dual_index_demultiplex.run()
+
+
+# test_dual_index_demultiplex.run()
 
 
 class TestDemultiplex(unittest.TestCase):

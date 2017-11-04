@@ -18,7 +18,8 @@ def launch_demultiplex(*args,
     """Simple function to initialize DemultiplexClass"""
     start_time = time.time()
     demultiplex = DemultiplexClass.Demuliplex(*args, 
-        directory = directory, 
+        directory = directory,
+        output_directory = output_directory, 
         barcode_1 = barcode_1, 
         barcode_2 = barcode_2,
         sample_key = sample_key, 
@@ -26,16 +27,10 @@ def launch_demultiplex(*args,
         mismatch = mismatch,
         gnu_zipped = gnu_zipped)
 
-    demultiplex.get_directory_lists()
-    demultiplex.process_barcodes()
-    demultiplex.process_file_label()
-    demultiplex.get_sample_labels()
-    demultiplex.output_objects(output_directory = output_directory)
-    demultiplex.iterate_through_qseq()
+    demultiplex.run()
     end_time = time.time()
 
-    nl = '\n'
-    print('Total reads:' + str(demultiplex.reads) + nl)
+    print('Total reads:' + str(demultiplex.reads))
     print('Reads passing filter:' + str(demultiplex.reads_pass_filter))
     print('Indexed reads:' + str(demultiplex.indexed_reads))
     print('Unmatched reads:' + str(demultiplex.unmatched_read))

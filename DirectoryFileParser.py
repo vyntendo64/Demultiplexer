@@ -22,6 +22,8 @@ class DirectoryFileParser:
         sample_names = [[] for _ in range(len(self.file_description))]
         # key to sort files bases on proper ID
         sorting_key = [[] for _ in range(len(self.file_description))]
+        print('sample_names')
+        print(sample_names)
         for count, file_title in enumerate(self.file_description):
             for file_name in file_list:
                 # order files based on read type, ie all read 1 go together etc.
@@ -35,6 +37,7 @@ class DirectoryFileParser:
                         sys.exit()
                     # store sort id in list for file type
                     sorting_key[count].append(sort_id)
+
         for count, seq_file_list in enumerate(sample_names):
             # sort list on unique ID and append sorted list of file, one list per file prefix
             files.append([x for x, y in sorted(zip(sample_names[count], sorting_key[count]))])

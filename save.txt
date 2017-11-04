@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+
+from BarcodeFileParser import BarcodeFileParser
+from DirectoryFileParser import DirectoryFileParser
+from KeyFileParser import KeyFileParser
+from QseqFileParser import QseqFileParser
+
+import sys
+
+class Demuliplex:
+    """Opens Illumina qseq directory and processes qseq files, outputs samples fastq files"""
+
+    def __init__(self, 
+        files = [],
+        directory = 'path',
+        output_directory = 'path', 
+        sample_key = 'path', 
+        mismatch = 1, 
+        action = '', 
+        primary_barcodes_path = None,
+        secondary_barcodes_path = None,
+        gnu_zipped = False):
+
+        # set input variables
+        self.files = files
+        self.directory = directory
+        self.output_directory = output_directory
+        self.sample_key = sample_key
+        self.mismatch = mismatch
+        self.action = action
+        self.action_list = []
+        self.primary_barcodes_path = primary_barcodes_path
+        self.secondary_barcodes_path = secondary_barcodes_path
+        self.primary_barcodes = {}
+        self.secondary_barcodes = {}
+        self.gnu_zipped = gnu_zipped
+
+        self.setUp()
+
+    def setUp(self):
+        self.barcode_count = None
+        self.read_count = None
+        self.sample_list = []
+
+    def run(self):
+        self.files = self.get_files()
+        self.primary_barcodes = self.get_primary_barcodes()
+        self.secondary_barcodes = self.get_secondary_barcodes()
+
+        self.set_action()
+
+        key_file_parser = KeyFileParser(path = self.sample_key)
+
+        if self.secondary_barcodes:
+            key_file_parser.set_combination_labels()
+        else:
+            key_file_parser.set_single_labels()
+
+        self.sample_list = key_file_parser.get_sample_list()
+        self.sample_key = key_file_parser.get_sample_key()
+
+        output_dict = self.get_output_dict(sample_list = self.sample_list,
+        output_directory = self.directory,
+        read_count = self.read_count)
+
+        print('output_dict')
+        print(output_dict)
+
+        qseq_file_parser = QseqFileParser(files = self.files,
+            directory = self.directory,
+            gnu_zipped = self.gnu_zipped,
+            action = self.action,
+            barcode_list = [self.primary_barcodes, self.secondary_barcodes],
+            output_dict = output_dict,
+            sample_key = self.sample_key)
+        
+        qseq_file_parser.run()
+
+    def get_files(self):
+        for file in self.files:
+            print('file')
+            print(file)
+            
+        # directory_parser = DirectoryFileParser(directory = self.directory, 
+        #     file_description = self.file_description)
+
+        # return directory_parser.get_files()
+
+    def get_primary_barcodes(self):
+        if(self.primary_barcodes_path):
+            barcode_parser = BarcodeFileParser(path = self.primary_barcodes_path,
+                mismatch = self.mismatch)
+
+            return barcode_parser.get_barcodes()
+        else:
+            return {}
+
+    def get_secondary_barcodes(self):
+        if(self.secondary_barcodes_path):
+            barcode_parser = BarcodeFileParser(path = self.secondary_barcodes_path,
+                mismatch = self.mismatch)
+
+            return barcode_parser.get_barcodes()
+        else: 
+            return {}
+
+    def set_action(self):
+        """Parses string describing input files, the action should be formatted as r for read and b for barcode,
+        so a string 'rbbr' would describe a four qseq file input with read barcode barcode read.  Used to properly
+        parse the qseq files
+        -----------------------------------------------------
+        self.action: string describing input files
+        self.barcode_count: returns count of barcode in file_lablel as a downstream control"""
+
+        action_list = []
+        for character in self.action:
+            if character.lower() == 'r':
+                action_list.append('read')
+            elif character.lower() == 'b':
+                action_list.append('barcode')
+
+        self.action_list = action_list
+        self.barcode_count = action_list.count('barcode')
+        self.read_count = action_list.count('read')
+
+    def get_output_dict(self, sample_list = [], output_directory = '', read_count = 0):
+        """Initialized objects to output reads in fastq format, will generate a file for every 'read' labeled file in
+        the action plus a file for unmatched reads
+        -----------------------------------------------------
+        output_directory = path to write files; folder must already exist
+        self.sample_list: list of input samples
+        self.read_count: number of read files labeled in file label
+        returns self.output_dict; hashes to output object based on sample name"""
+        # initialize output objects for all samples
+        # print(self.sample_list)
+        # print('read count')
+        # print(self.read_count)
+        output_dict = {}
+        sample_list.append('unmatched')
+        for action in sample_list:
+            object_list = []
+            for count in range(read_count):
+                object_list.append(open(output_directory + action + '_' + str(count + 1) + '.fastq', 'w'))
+            output_dict[action] = object_list
+        return output_dict

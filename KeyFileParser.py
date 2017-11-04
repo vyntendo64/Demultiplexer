@@ -14,7 +14,14 @@ class KeyFileParser:
     def get_sample_key(self):
         return self.sample_key
 
-    def set_combination_labels(self):
+    def set_labels(self, to = 'single'):
+        if to == 'dual':
+            self.set_dual_labels()
+
+        else:
+            self.set_single_labels()
+
+    def set_dual_labels(self):
         """Takes sample label file and processes barcode sample IDs.  Note this function assumes 'barcode1 \t barcode 2
         \t sample_name \n' .  If only one barcode is used then the sample file should be formatted as
         'barcode1 \t sample_name \n' and no barcode_2 file should be supplied. Function will fail if sample key is not
