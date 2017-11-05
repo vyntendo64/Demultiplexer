@@ -9,29 +9,29 @@ class QseqFileParser:
         barcode_list = [], 
         output_directory = os.getcwd(), 
         sample_list = [],
-        read_count = 1): 
+        read_count = 1,
+        gnu_zipped = False): 
         
         self.files = files
         self.barcode_list = barcode_list
         self.output_directory = output_directory
         self.sample_list = sample_list
         self.read_count = read_count
+        self.gnu_zipped = gnu_zipped
         
         self.BARCODE_LOCATION = 8
 
-    def run(self, 
-        files = [], 
-        gnu_zipped = False):
+        self.iterator = MultipleSequencingFileIterator(files = self.files, gnu_zipped = self.gnu_zipped)
+
+        self.barcode_indexes = self.iterator.get_barcode_indexes()
+        self.read_indexes = self.iterator.get_read_indexes()
+
+    def run(self):
 
         self.reads = 0
         self.reads_pass = 0
         self.unmatched_reads = 0
         self.indexed_reads = 0
-
-        self.iterator = MultipleSequencingFileIterator(files = files, gnu_zipped = gnu_zipped)
-
-        self.barcode_indexes = self.iterator.get_barcode_indexes()
-        self.read_indexes = self.iterator.get_read_indexes()
 
         output_dict = self.get_output_dict()
 

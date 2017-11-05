@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import os
-import sys
 import time
 from BarcodeFileParser import BarcodeFileParser
 from IncrementingFileExtractor import IncrementingFileExtractor
@@ -20,7 +19,7 @@ class Demuliplex:
         self.end_time = time.time()
 
         self.file_extractor = IncrementingFileExtractor(files)
-        
+
         self.primary_barcode_parser = BarcodeFileParser(path = primary_barcodes_path,
                 mismatch = mismatch)
         self.secondary_barcode_parser = BarcodeFileParser(path = secondary_barcodes_path,
@@ -33,21 +32,24 @@ class Demuliplex:
 
         self.start_time = time.time()
 
-        files = self.file_extractor.get_files()
         primary_barcodes = self.primary_barcode_parser.get_barcodes()
         secondary_barcodes = self.secondary_barcode_parser.get_barcodes()
 
         if secondary_barcodes:
             self.key_file_parser.set_parse_type('dual')
 
-        sample_list = self.key_file_parser.get_sample_list()
-
-        self.qseq_file_parser = QseqFileParser(barcode_list = [primary_barcodes, secondary_barcodes],
+        self.qseq_file_parser = QseqFileParser(
+            files = self.file_extractor.get_files(),
+            barcode_list = [
+                primary_barcodes, 
+                secondary_barcodes
+            ],
             output_directory = output_directory,
-            sample_list = sample_list,
-            read_count = self.file_extractor.get_read_count())
+            sample_list = self.key_file_parser.get_sample_list(),
+            read_count = self.file_extractor.get_read_count(),
+            gnu_zipped = gnu_zipped)
         
-        self.qseq_file_parser.run(files = files, gnu_zipped = gnu_zipped)    
+        self.qseq_file_parser.run()    
 
         self.end_time = time.time()
 
