@@ -57,8 +57,6 @@ class BarcodeFileParser:
         # barcode to list
 
         for possible_mismatch in self.mismatch_list:
-            # print('possible mismatch')
-            # print(possible_mismatch)
             # loop over every position in barcode
             for index in range(len(barcode)):        
                 barcode_list = list(barcode)
@@ -86,6 +84,7 @@ class BarcodeFileParser:
     def get_barcodes_from_mismatches(self, mismatches, barcode_number):
         barcodes = {}
         collision_sequences = []
+        
         for possible_barcode in mismatches:
             if possible_barcode not in collision_sequences:
                 if possible_barcode not in list(barcodes.keys()):

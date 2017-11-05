@@ -1,41 +1,8 @@
 #!/usr/bin/env python3
 
-import DemultiplexClass
+import Demultiplex
 import time
 import argparse
-
-
-def launch_demultiplex(*args, 
-    directory = 'path', 
-    sample_key = 'path', 
-    mismatch = 1, 
-    file_label = '', 
-    barcode_1 = None,
-    barcode_2 = None, 
-    output_directory = None, 
-    gnu_zipped = False):
-
-    """Simple function to initialize DemultiplexClass"""
-    start_time = time.time()
-    demultiplex = DemultiplexClass.Demuliplex(*args, 
-        directory = directory,
-        output_directory = output_directory, 
-        barcode_1 = barcode_1, 
-        barcode_2 = barcode_2,
-        sample_key = sample_key, 
-        file_label = file_label, 
-        mismatch = mismatch,
-        gnu_zipped = gnu_zipped)
-
-    demultiplex.run()
-    end_time = time.time()
-
-    print('Total reads:' + str(demultiplex.reads))
-    print('Reads passing filter:' + str(demultiplex.reads_pass_filter))
-    print('Indexed reads:' + str(demultiplex.indexed_reads))
-    print('Unmatched reads:' + str(demultiplex.unmatched_read))
-    print('Total time:' + str(round((end_time - start_time) / 60.0, 2)) + ' minutes')
-
 
 parser = argparse.ArgumentParser(description = 'Demultiplexing script. Script demultiplexes Illumnina qseq lane files '
                                              'outputing sample fastq files. Works with .gz and uncompressed qseq files.'
@@ -60,16 +27,25 @@ parser.add_argument('-Z', action = "store_true", default = False, help = 'if qse
 parser.add_argument('-I', type = str, nargs = '*', help = 'qseq file prefix and suffix separated'
                                                     'by ^, ie. -I s_1_^.qseq.txt '
                                                     's_2_^.qseq.txt ')
+
 arguments = parser.parse_args()
 
 print('Started Job')
 
-launch_demultiplex(*arguments.I, 
-    directory = arguments.D, 
-    barcode_1 = arguments.B1, 
-    barcode_2 = arguments.B2,
-    sample_key = arguments.S, 
-    output_directory = arguments.O, 
-    mismatch = arguments.M, 
-    gnu_zipped = arguments.Z,
-    file_label = arguments.L)
+files = []
+
+for index, file in enumerate(arguments.I):
+    files.append({
+        "path": arguments.D + '/' + file,
+        "action": arguments.L[index]
+    })
+
+demultiplex = Demultiplex.Demuliplex(files = files,
+        sample_key_path = arguments.S,
+        primary_barcodes_path = arguments.B1,
+        secondary_barcodes_path = arguments.B2,
+        mismatch = arguments.M)
+
+demultiplex.run(output_directory = arguments.O, gnu_zipped = arguments.Z)
+
+demultiplex.print_output()

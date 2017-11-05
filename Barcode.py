@@ -14,6 +14,7 @@ class Barcode:
         returns; reverse complement string"""
         # reverse string
         reversed = []
+
         self.barcode = self.barcode[::-1]
         # complementary bp lookup dictionary
         bases = list(self.barcode)
@@ -23,6 +24,7 @@ class Barcode:
 
         # return joined string
         self.barcode = ''.join(reversed)
+        
         return self.barcode
 
     def get(self):

@@ -24,11 +24,7 @@ def launch_demultiplex(*args,
 
     demultiplex.run()
     end_time = time.time()
-    
-    print('Total readss:' + str(demultiplex.reads))
-    print('Reads passing filter:' + str(demultiplex.reads_pass_filter))
-    print('Unmatched reads:' + str(demultiplex.unmatched_read))
-    print('Total time:' + str(round((end_time - start_time) / 60.0, 2)) + ' minutes')
+    demultiplex.print()
 
 launch_demultiplex('s_1_1_*_qseq.txt', 
     's_1_2_*_qseq.txt', 

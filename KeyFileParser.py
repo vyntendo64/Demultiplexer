@@ -32,7 +32,7 @@ class KeyFileParser:
             # if barcode_2 supplied sample id is a combination of 2 barcodes
             try:
                 if self.parse_type == 'dual':
-                    sample_list.append({line[1]: [int(line[0]), int(line[1])]})
+                    sample_list.append({line[2]: [int(line[0]), int(line[1])]})
                 else: 
                     sample_list.append({line[1]: [int(line[0])]})
             except ValueError:
