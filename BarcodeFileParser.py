@@ -2,10 +2,13 @@
 from Barcode import Barcode
 
 class BarcodeFileParser:
-    def __init__(self, path = None, mismatch = 1):
+    def __init__(self, path = None, 
+        mismatch = 1,
+        mismatch_list = ['A', 'T', 'G', 'C', '.']):
+
         self.path = path
         self.mismatch = 0 if mismatch <= 0 else mismatch
-        self.mismatch_list = ['A', 'T', 'G', 'C', '.']
+        self.mismatch_list = mismatch_list
 
     def set_mismatch_list(self, mismatch_list = []):
         self.mismatch_list = mismatch_list
@@ -47,15 +50,9 @@ class BarcodeFileParser:
         mismatches decreases demultiplexing performance
         returns; a list of barcodes ('strings')"""
         # initialize list with with input barcode
-        
         # calculate first set of mismatches
         # loop over possible mismatches
-
-        # print(barcode)
-        # print(len(barcode))
-        # print(range(len(barcode)))
-        # print(list(barcode))
-
+        
         mismatched_barcodes = [barcode]
         # barcode to list
 
@@ -71,23 +68,11 @@ class BarcodeFileParser:
                 if ''.join(barcode_list) not in mismatched_barcodes:
                     mismatched_barcodes.append(''.join(barcode_list))
 
-        # print('barcode list')
-        # print(barcode_list)
-        # print('mismatched_barcodes')
-        # print(mismatched_barcodes)
-        # print(self.mismatch)
-        # print(set(mismatched_barcodes))
-
         if self.mismatch > 1:
-            # print('in mismatch')
             # initialize additional loops based on mismatch number
             for count in range(self.mismatch - 1):
-                # print('count')
-                # print(count)
                 # repeat loop
                 for mismatched_barcode in list(mismatched_barcodes):
-                    # print('mismatched_barcode')
-                    # print(mismatched_barcode)
                     for possible_mismatch in self.mismatch_list:
                         for character in range(len(mismatched_barcode)):
 

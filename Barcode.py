@@ -5,8 +5,6 @@ class Barcode:
         self.barcode = barcode
         self.number = number
         self.complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'}
-        # print('barcode number')
-        # print(number)
 
     def reverse(self):
         """Simple reverse complement function used to initialize a barcode dictionary, (original sequence and reverse
@@ -25,7 +23,6 @@ class Barcode:
 
         # return joined string
         self.barcode = ''.join(reversed)
-
         return self.barcode
 
     def get(self):

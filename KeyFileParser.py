@@ -3,52 +3,18 @@
 class KeyFileParser:
     """Opens Illumina qseq directory and processes qseq files, outputs samples fastq files"""
 
-    def __init__(self, path = 'path'):
+    def __init__(self, path = 'path', parse_type = 'single'):
         self.path = path
+        self.parse_type = parse_type
         self.sample_list = []
-        self.sample_key = {}
+
+    def set_parse_type(self, parse_type = 'single'):
+        self.parse_type = parse_type
+
+    def get_parse_type(self):
+        return self.parse_type
 
     def get_sample_list(self):
-        return self.sample_list
-
-    def get_sample_key(self):
-        return self.sample_key
-
-    def set_labels(self, to = 'single'):
-        if to == 'dual':
-            self.set_dual_labels()
-
-        else:
-            self.set_single_labels()
-
-    def set_dual_labels(self):
-        """Takes sample label file and processes barcode sample IDs.  Note this function assumes 'barcode1 \t barcode 2
-        \t sample_name \n' .  If only one barcode is used then the sample file should be formatted as
-        'barcode1 \t sample_name \n' and no barcode_2 file should be supplied. Function will fail if sample key is not
-        in this format.
-        -----------------------------------------------------
-        opens self.sample_key; parses files and hashes to sample name based on unique barcode ID
-        returns self.sample_key; a dictionary hashing to sample name"""
-        # initialize dict
-        
-        sample_dict = {}
-        # loop through text file
-        for line in open(self.path):
-            # replace new line indicator
-            line_replace = line.replace('\n', '')
-            # split on tabs
-            line_split = line_replace.split('\t')
-            # if barcode_2 supplied sample id is a combination of 2 barcodes
-            try:
-                sample_dict['key' + str(int(line_split[0])) + 'key' + str(int(line_split[1]))] = line_split[2]
-            except ValueError:
-                print('Sample Key not in proper format\nPlease format file Barcode1 tab Barcode2 tab SampleName')
-                sys.exit()
-
-            self.sample_list.append(line_split[2])
-        self.sample_key = sample_dict
-
-    def set_single_labels(self):
         """Takes sample label file and processes barcode sample IDs.  Note this function assumes 'barcode1 \t barcode 2
         \t sample_name \n' .  If only one barcode is used then the sample file should be formatted as
         'barcode1 \t sample_name \n' and no barcode_2 file should be supplied. Function will fail if sample key is not
@@ -59,17 +25,20 @@ class KeyFileParser:
         # initialize dict
         # loop through text file
 
-        sample_dict = {}
+        sample_list = []
         for line in open(self.path):
             # replace new line indicator
-            line_replace = line.replace('\n', '')
-            # split on tabs
-            line_split = line_replace.split('\t')
+            line = line.replace('\n', '').split('\t')
             # if barcode_2 supplied sample id is a combination of 2 barcodes
             try:
-                sample_dict['key' + str(int(line_split[0]))] = line_split[1]
+                if self.parse_type == 'dual':
+                    sample_list.append({line[1]: [int(line[0]), int(line[1])]})
+                else: 
+                    sample_list.append({line[1]: [int(line[0])]})
             except ValueError:
                 print('Sample Key not in proper format\nPlease format file Barcode tab SampleName')
                 sys.exit()
-            self.sample_list.append(line_split[1])
-        self.sample_key = sample_dict
+
+        return sample_list
+
+

@@ -2,7 +2,7 @@
 import os 
 import sys
 
-class FileExtractor:
+class IncrementingFileExtractor:
     def __init__(self, files = []):
         self.files = files
         self.break_characters = ['.^.']

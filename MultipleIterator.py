@@ -40,3 +40,17 @@ class MultipleSequencingFileIterator:
     def get_next_row(self):
         for row in zip(*self.build):
             yield row
+
+    def get_barcode_indexes(self):
+        barcode_indexes = []
+        for index, file in enumerate(self.files):
+            if file['action'] == 'barcode':
+                barcode_indexes.append(index)
+        return barcode_indexes
+
+    def get_read_indexes(self):
+        read_indexes = []
+        for index, file in enumerate(self.files):
+            if file['action'] == 'read':
+                read_indexes.append(index)
+        return read_indexes
