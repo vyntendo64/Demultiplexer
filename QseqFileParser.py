@@ -27,7 +27,6 @@ class QseqFileParser:
         self.reads_pass = 0
         self.unmatched_reads = 0
         self.indexed_reads = 0
-        self.UNMATCHED_SAMPLE = 'unmatched'
 
         self.iterator = MultipleSequencingFileIterator(files = files, gnu_zipped = gnu_zipped)
 

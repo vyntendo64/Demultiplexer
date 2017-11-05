@@ -20,6 +20,7 @@ class Demuliplex:
         self.end_time = time.time()
 
         self.file_extractor = IncrementingFileExtractor(files)
+        
         self.primary_barcode_parser = BarcodeFileParser(path = primary_barcodes_path,
                 mismatch = mismatch)
         self.secondary_barcode_parser = BarcodeFileParser(path = secondary_barcodes_path,
